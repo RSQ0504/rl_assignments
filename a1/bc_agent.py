@@ -124,11 +124,18 @@ class BCAgent(base_agent.BaseAgent):
         # placeholder
         a_space = self._env.get_action_space()
         a = torch.zeros(a_space.shape, device=self._device)
+        norm_obs = self._obs_norm.normalize(obs)
+        a_dist = self._model.eval_actor(norm_obs)
+        norm_a = a_dist.sample()
+        a = self._a_norm.unnormalize(norm_a)
+        
         
         ## b) query the expert for an action
         # placeholder
         a_space = self._env.get_action_space()
         expert_a = torch.zeros(a_space.shape, device=self._device)
+        
+        expert_a = self._eval_expert(obs)
 
         a_info = {
             "expert_a": expert_a
@@ -141,4 +148,7 @@ class BCAgent(base_agent.BaseAgent):
         '''
         # placeholder
         loss = torch.zeros(1, device=self._device)
+        a_dist = self._model.eval_actor(norm_obs)
+        log_prob = a_dist.log_prob(norm_expert_a)
+        loss = -log_prob.mean()      
         return loss
