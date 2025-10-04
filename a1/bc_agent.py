@@ -140,7 +140,7 @@ class BCAgent(base_agent.BaseAgent):
         a_info = {
             "expert_a": expert_a
         }
-        return a, a_info
+        return a.detach(), a_info
     
     def _compute_actor_loss(self, norm_obs, norm_expert_a):
         '''
